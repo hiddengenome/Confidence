@@ -5,7 +5,7 @@ import numpy as np
 
 from flask import Flask, render_template
 
-filename = 'data.h5'
+filename = 'crispr.h5'
 
 app = Flask(__name__)
 
@@ -15,7 +15,7 @@ def index():
     with h5py.File(filename, 'r') as f:
         states = f['states']
         data = np.array(states.value)
-        data = np.amax(data, axis=0)[1:1500]
+        data = np.amax(data, axis=0)#[1:200]
 
     return render_template("index.html", data=data)
 
