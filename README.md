@@ -3,8 +3,8 @@ Visualization of model confidence on genomic sequences
 
 # Usage
 
-Run the Server and point your browser to http://127.0.0.1:5000/
+Run the Server with python 2 and point your browser to http://127.0.0.1:5000/
 
 ```bash
-python2.7 server.py
+python server.py -i examples/crispr.h5
 ```
