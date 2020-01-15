@@ -1,5 +1,5 @@
 # Confidence
-Visualization of state responses of GenomeNet
+Visualization of model confidence on genomic sequences
 
 # Usage
 
