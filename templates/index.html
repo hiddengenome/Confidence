@@ -3,6 +3,11 @@
 <head>
   <meta charset="utf-8">
   <style>
+  .container {
+        margin: 0 50px;
+        padding: 0;
+        height: 100%;
+    }
   .horizon {
     border-top: solid 1px #000;
     border-bottom: solid 1px #000;
@@ -15,9 +20,11 @@
   }
 
   .horizon canvas {
-    display: block;
-    image-rendering: pixelated;
-  }
+          display: block;
+          width: 100%;
+          height: 30px;
+          image-rendering: pixelated;
+      }
 
   .horizon .title,
   .horizon .value {
@@ -55,9 +62,9 @@ console.log(typeof series)
 
 
 var horizonChart = d3.horizonChart()
-    .height(100)
-    .title('Horizon, 4-band')
-    .colors(['#313695', '#4575b4', '#74add1', '#abd9e9', '#fee090', '#fdae61', '#f46d43', '#d73027']);
+    .height(20)
+    .title('1')
+    .colors(['#313695', '#4575b4', '#74add1', '#abd9e9', '#fee090', '#fdae61', '#f46d43', '#000000']);
 
 var horizons = d3.select('body').selectAll('.horizon')
     .data([series])
