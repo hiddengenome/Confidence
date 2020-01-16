@@ -1,5 +1,4 @@
 import h5py
-import json
 import numpy as np
 from argparse import ArgumentParser
 import os.path
