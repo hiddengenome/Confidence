@@ -9,7 +9,7 @@ git clone https://github.com/hiddengenome/Confidence.git
 cd Confidence
 virtualenv env
 source env/bin/activate
-pip install argparse
+pip install argparse numpy h5py flask
 ```
 
 # Usage
