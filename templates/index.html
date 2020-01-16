@@ -47,30 +47,66 @@
   </style>
 </head>
 <body>
+  <div class="container"></div>
+
 <div id='graphDiv'></div>
 
 <script src="https://d3js.org/d3.v4.js"></script>
 <script src="https://unpkg.com/d3-horizon-chart"></script>
+
 <script>
 
 var series = [];
 {% for item in data %}
       series.push({{item}});
 {% endfor %}
-console.log(series)
-console.log(typeof series)
 
+const group = (source) => ({
+  by: (grouping) => {
+    const groups = source.reduce((accumulator, item) => {
+      const name = JSON.stringify(grouping(item));
+      accumulator[name] = accumulator[name] || [];
+      accumulator[name].push(item);
+      return accumulator;
+    }, {});
+
+    return Object.keys(groups).map(key => groups[key]);
+  }
+});
+
+const chunk = (source, size) => group(source.map((item, index) => ({ item, index })))
+.by(x => Math.floor(x.index / size))
+.map(x => x.map(v => v.item));
 
 var horizonChart = d3.horizonChart()
     .height(20)
     .title('1')
     .colors(['#313695', '#4575b4', '#74add1', '#abd9e9', '#fee090', '#fdae61', '#f46d43', '#000000']);
 
+const chunkSize = 10000;
+const chunks = chunk(series, chunkSize);
+//console.log(JSON.stringify(chunks));
+
+//var horizons = d3.select('body').selectAll('.horizon')
+//    .data([series])
+//    .enter().append('div')
+//    .attr('class', 'horizon')
+//    .each(horizonChart);
+
+
+// split data into chunks and visualize row-wise
 var horizons = d3.select('body').selectAll('.horizon')
-    .data([series])
+    .data(chunks)
     .enter().append('div')
     .attr('class', 'horizon')
-    .each(horizonChart);
+    .each(function(d, i) {
+        var j = i+1;
+        horizonChart.colors(['#313695', '#4575b4', '#74add1', '#abd9e9', '#fee090', '#fdae61', '#f46d43', '#000000'])
+            .height(11)
+            .title((j-1) * chunkSize + '-' + j * chunkSize)
+            .call(this, d);
+});
+
 
 </script>
 </body>
