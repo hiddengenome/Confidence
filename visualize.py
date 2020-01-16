@@ -1,6 +1,4 @@
 import h5py
-import json
-import pandas as pd
 import numpy as np
 from argparse import ArgumentParser
 import os.path
@@ -18,6 +16,11 @@ parser = ArgumentParser(description="ikjMatrix multiplication")
 parser.add_argument("-i", dest="filename", required=True,
                     help="input h5 file", metavar="FILE",
                     type=lambda x: is_valid_file(parser, x))
+parser.add_argument("-from", dest="start_position", required=False,
+                    help="start positional index", type=int)
+parser.add_argument("-to", dest="end_position", required=False,
+                    help="end positional index", type=int)
+
 args = parser.parse_args()
 
 app = Flask(__name__)
@@ -29,6 +32,8 @@ def index():
         states = f['states']
         data = np.array(states.value)
         data = np.amax(data, axis=0)
+        if args.start_position is not None:
+            data = data[args.start_position : args.end_position]
 
     return render_template("index.html", data=data)
 
