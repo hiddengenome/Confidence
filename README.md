@@ -1,6 +1,8 @@
 # Confidence
 Visualization of model confidence on genomic sequences
 
+![Image of CRISPR region](src/example.png)
+
 # installation
 ```bash
 git clone https://github.com/hiddengenome/Confidence.git
