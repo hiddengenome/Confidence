@@ -1,9 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import h5py
 import numpy as np
 from argparse import ArgumentParser
 import os.path
 
 from flask import Flask, render_template
+
 
 def is_valid_file(parser, arg):
     if not os.path.exists(arg):
@@ -25,6 +29,7 @@ args = parser.parse_args()
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def index():
     # load data
@@ -33,9 +38,10 @@ def index():
         data = np.array(states.value)
         data = np.amax(data, axis=0)
         if args.start_position is not None:
-            data = data[args.start_position : args.end_position]
+            data = data[args.start_position: args.end_position]
 
-    return render_template("index.html", data=data)
+    return render_template("single.html", data=data)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

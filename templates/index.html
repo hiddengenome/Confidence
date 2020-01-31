@@ -1,113 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <style>
-  .container {
-        margin: 0 50px;
-        padding: 0;
-        height: 100%;
-    }
-  .horizon {
-    border-top: solid 1px #000;
-    border-bottom: solid 1px #000;
-    overflow: hidden;
-    position: relative;
-  }
+    <meta charset="utf-8">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
 
-  .horizon + .horizon {
-    border-top: none;
-  }
 
-  .horizon canvas {
-          display: block;
-          width: 100%;
-          height: 30px;
-          image-rendering: pixelated;
-      }
+        #table {
+            padding: 20px;
+            width: 60%;
+        }
 
-  .horizon .title,
-  .horizon .value {
-      bottom: 0;
-      line-height: 30px;
-      margin: 0 6px;
-      position: absolute;
-      font-family: sans-serif;
-      text-shadow: 0 1px 0 rgba(255,255,255,.5);
-      white-space: nowrap;
-  }
+        #table>h3 {
+            text-align: center;
+        }
 
-  .horizon .title {
-      left: 0;
-  }
+        .horizon {
+            border-top: solid 1px #000;
+            border-bottom: solid 1px #000;
+            overflow: hidden;
+            position: relative;
+        }
 
-  .horizon .value {
-      right: 0;
-  }
-  </style>
+        .horizon+.horizon {
+            border-top: none;
+        }
+
+        .horizon canvas {
+            display: block;
+            image-rendering: pixelated;
+
+        }
+
+        .horizon .title,
+        .horizon .value {
+            bottom: 0;
+            line-height: 30px;
+            margin: 0 6px;
+            position: absolute;
+            font-family: sans-serif;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+            white-space: nowrap;
+        }
+
+        .horizon .title {
+            left: 0;
+        }
+
+        .horizon .value {
+            right: 0;
+        }
+
+        .col-sm-4 {
+            width: 28% !important;
+            vertical-align: bottom;
+        }
+
+    </style>
 </head>
+
 <body>
-  <div class="container"></div>
+    <link type="text/css" href="http://cdn.datatables.net/v/dt/dt-1.10.16/sl-1.2.5/datatables.min.css" rel="stylesheet" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.datatables.net/v/dt/dt-1.10.16/sl-1.2.5/datatables.min.js"></script>
+    <link type="text/css" href="http://gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
+    <script type="text/javascript" src="http://gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://unpkg.com/d3-horizon-chart"></script>
+    {% block main %}
+    <div id="container">
 
-<div id='graphDiv'></div>
+        <div id="table">
+            <h3>Choose the sequences and region to visualize</h3>
+            <table id="seqlist" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Length</th>
+                    </tr>
+                </thead>
 
-<script src="https://d3js.org/d3.v4.js"></script>
-<script src="https://unpkg.com/d3-horizon-chart"></script>
+            </table>
 
-<script>
+            <div class="form-group">
+                <div class="col-sm-4">
+                    <label>Please input the region to visualize: </label>
+                </div>
 
-var series = [];
-{% for item in data %}
-      series.push({{item}});
-{% endfor %}
+                <div class="col-sm-2">
+                    <label for="from" class="sr-only"></label>
+                    <input id="from" class="form-control input-group-lg" type="text" name="from" title="Enter start position" placeholder="From">
+                </div>
+                <div class="col-sm-2">
+                    <label for="from" class="sr-only"></label>
+                    <input id="to" class="form-control input-group-lg" type="text" name="from" title="Enter stop position" placeholder="To">
+                </div>
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" onclick="submit_message();" type="button">
+                        Go!
+                    </button>
+                    <!--            (If the region is not specified, the whole sequences will be visualized.)-->
+                </span>
 
-const group = (source) => ({
-  by: (grouping) => {
-    const groups = source.reduce((accumulator, item) => {
-      const name = JSON.stringify(grouping(item));
-      accumulator[name] = accumulator[name] || [];
-      accumulator[name].push(item);
-      return accumulator;
-    }, {});
-
-    return Object.keys(groups).map(key => groups[key]);
-  }
-});
-
-const chunk = (source, size) => group(source.map((item, index) => ({ item, index })))
-.by(x => Math.floor(x.index / size))
-.map(x => x.map(v => v.item));
-
-var horizonChart = d3.horizonChart()
-    .height(20)
-    .title('1')
-    .colors(['#313695', '#4575b4', '#74add1', '#abd9e9', '#fee090', '#fdae61', '#f46d43', '#000000']);
-
-const chunkSize = 10000;
-const chunks = chunk(series, chunkSize);
-//console.log(JSON.stringify(chunks));
-
-//var horizons = d3.select('body').selectAll('.horizon')
-//    .data([series])
-//    .enter().append('div')
-//    .attr('class', 'horizon')
-//    .each(horizonChart);
-
-
-// split data into chunks and visualize row-wise
-var horizons = d3.select('body').selectAll('.horizon')
-    .data(chunks)
-    .enter().append('div')
-    .attr('class', 'horizon')
-    .each(function(d, i) {
-        var j = i+1;
-        horizonChart.colors(['#313695', '#4575b4', '#74add1', '#abd9e9', '#fee090', '#fdae61', '#f46d43', '#000000'])
-            .height(11)
-            .title((j-1) * chunkSize + '-' + j * chunkSize)
-            .call(this, d);
-});
+            </div>
 
 
-</script>
+
+        </div>
+    </div>
+
+    {% endblock %}
+    {% block script %}
+    <script>
+        var sequences = {{data|tojson}};
+
+        var table = $('#seqlist').DataTable({
+            //            "serverSide": true,
+            'data': sequences,
+            'columnDefs': [{
+                'targets': 0,
+                'checkboxes': {
+                    'selectRow': true
+                }
+            }],
+            'select': {
+                'style': 'multi'
+            },
+            'order': [
+                [1, 'asc']
+            ]
+        });
+
+        var updateHorizons = function(data) {
+            var path = d3.select('body').selectAll('.horizon').data(data);
+            path.exit().remove();
+            var horizons = d3.select('body').selectAll('.horizon')
+                .data(data)
+                .enter()
+                .append('div')
+                .attr('class', 'horizon')
+                .each(function(d) {
+                    d3.horizonChart()
+                        .height(30)
+                        .colors(['#313695', '#4575b4', '#74add1', '#abd9e9', '#fee090', '#fdae61', '#f46d43', '#d73027'])
+                        .title(d.name)
+                        .call(this, d.value);
+                });
+            return horizons;
+
+        }
+
+        function submit_message() {
+            var selected_seqs = table.column(0).checkboxes.selected();
+            var from = document.getElementById("from");
+            var to = document.getElementById("to");
+            var seqs = [];
+            $.each(selected_seqs, function(index, rowId) {
+                seqs.push(rowId)
+            });
+            var entry = {
+                selections: seqs,
+                from: from.value,
+                to: to.value
+            };
+
+            fetch(`${window.origin}/view`, {
+                    method: "POST",
+                    credentials: "include",
+                    body: JSON.stringify(entry),
+                    cache: "no-cache",
+                    headers: new Headers({
+                        "content-type": "application/json"
+                    })
+                })
+                .then(function(response) {
+                    if (response.status !== 200) {
+                        console.log(`Looks like there was a problem. Status code: ${response.status}`);
+                        return;
+                    }
+                    response.json().then(function(data) {
+
+                        console.log(data);
+
+                        var horizons = updateHorizons(data);
+                    });
+
+                })
+                .catch(function(error) {
+                    console.log("Fetch error: " + error);
+                });
+        }
+
+    </script>
+    {% endblock %}
 </body>
+
 </html>
