@@ -56,11 +56,12 @@ if __name__ == "__main__":
     parser.add_argument("-i", dest="filename", required=True,
                         help="input h5 file", metavar="FILE",
                         type=lambda x: is_valid_file(parser, x))
-
+    parser.add_argument("-p", dest="port", default=5000,
+                        help="The port of APP")
     args = parser.parse_args()
 
     f = h5py.File(args.filename, 'r')
     states = f['states']
     names = list(states.keys())
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=args.port, debug=True)
     f.close()
